@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 
 #[derive(Parser, Debug, Clone)]
-#[command(author, version = "0.1.0 using bootloader 0.11.4", about, long_about = None)]
+#[command(author, version = concat!(std::env!("CARGO_PKG_VERSION"), " using bootloader 0.11.4"), about, long_about = None)]
 pub struct Config {
     #[arg(value_enum)]
     pub command: SubCommand,

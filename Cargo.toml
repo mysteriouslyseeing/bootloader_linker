@@ -1,6 +1,6 @@
 [package]
 name = "bootloader_linker"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A quick and easy program that links your executables created using bootloader_api with the actual bootloader."
 license = "MIT OR Apache-2.0"

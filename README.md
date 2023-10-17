@@ -9,6 +9,13 @@ bootloader_linker -V
 bootloader_linker 0.1.0 using bootloader version 0.11.4
 ```
 
+## Installation
+
+Install with cargo:
+```sh
+cargo install bootloader_linker
+```
+
 ## Usage
 
 ```sh

@@ -27,7 +27,7 @@ fn main() {
 
             if let Err(e) = UefiBoot::new(&input_file).create_disk_image(&uefi_path) {
                 error!("Fatal error encountered while building disk image: {e}");
-                trace!("[bootloader-linker] HELP - Is the file valid and can bootloader-linker access it?");
+                trace!("Is the file valid and can bootloader-linker access it?");
                 std::process::exit(1);
             }
 
@@ -37,7 +37,7 @@ fn main() {
 
             if let Err(e) = BiosBoot::new(&input_file).create_disk_image(&bios_path) {
                 error!("Fatal error encountered while building disk image: {e}");
-                trace!("[bootloader-linker] HELP - Is the file valid and can bootloader-linker access it?");
+                trace!("Is the file valid and can bootloader-linker access it?");
                 std::process::exit(1);
             }
 

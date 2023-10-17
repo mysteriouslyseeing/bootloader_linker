@@ -11,10 +11,20 @@ bootloader_linker 0.1.0 using bootloader version 0.11.4
 
 ## Installation
 
-Install with cargo:
+Installation via cargo currently isn't working (only tested on Windows).
+
+However, building from source always does.
+
 ```sh
-cargo install bootloader_linker
+> git clone https://github.com/mysteriouslyseeing/bootloader_linker.git
+> cd bootloader_linker
+> cargo build --release
 ```
+
+Then, take the compiled binary and place it somewhere in path.
+
+You can also `cargo install bootloader_linker`, and replace the executable in .cargo/bin with the one you built yourself.
+This has the upside of ensuring that `cargo uninstall bootloader_linker` works.
 
 ## Usage
 

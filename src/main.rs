@@ -1,6 +1,6 @@
 use bootloader_linker::{Config, SubCommand, init_logger};
 use clap::Parser;
-use log::{trace, info, error};
+use log::{info, error, trace};
 
 use bootloader::{UefiBoot, BiosBoot};
 
@@ -21,13 +21,13 @@ fn main() {
     }
 
     if build {
-        info!("Building disk image");
+        trace!("Building disk image");
         if uefi {
             let uefi_path = if out_dir.is_dir() { out_dir.join("uefi.img") } else { out_dir };
 
             if let Err(e) = UefiBoot::new(&input_file).create_disk_image(&uefi_path) {
                 error!("Fatal error encountered while building disk image: {e}");
-                trace!("Is the file valid and can bootloader-linker access it?");
+                e.chain().skip(1).for_each(|cause| info!("Caused by: {cause}"));
                 std::process::exit(1);
             }
 
@@ -37,7 +37,7 @@ fn main() {
 
             if let Err(e) = BiosBoot::new(&input_file).create_disk_image(&bios_path) {
                 error!("Fatal error encountered while building disk image: {e}");
-                trace!("Is the file valid and can bootloader-linker access it?");
+                e.chain().skip(1).for_each(|cause| info!("Caused by: {cause}"));
                 std::process::exit(1);
             }
 
@@ -45,7 +45,7 @@ fn main() {
         }
     }
     if run {
-        info!("Running disk image");
+        trace!("Running disk image");
         let mut cmd = std::process::Command::new(qemu_path);
         if uefi {
             cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());

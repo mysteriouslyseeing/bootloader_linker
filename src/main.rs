@@ -23,7 +23,17 @@ fn main() {
     if build {
         trace!("Building disk image");
         if uefi {
-            let uefi_path = if out_dir.is_dir() { out_dir.join("uefi.img") } else { out_dir };
+            let uefi_path = if out_dir.is_dir() {
+                out_dir.join("uefi.img")
+            } else if out_dir.to_str().map(|s| s.as_bytes().last().map(|&b| b == b'/' || b == b'\\')).unwrap_or(Some(false)).unwrap_or(false) {
+                if let Ok(_) = std::fs::create_dir_all(&out_dir) {
+                    out_dir.join("uefi.img")
+                } else {
+                    out_dir
+                }
+            } else {
+                out_dir
+            };
 
             if let Err(e) = UefiBoot::new(&input_file).create_disk_image(&uefi_path) {
                 error!("Fatal error encountered while building disk image: {e}");
@@ -33,7 +43,17 @@ fn main() {
 
             input_file = uefi_path;
         } else {
-            let bios_path = if out_dir.is_dir() { out_dir.join("bios.img") } else { out_dir };
+            let bios_path = if out_dir.is_dir() {
+                out_dir.join("bios.img")
+            } else if out_dir.to_str().map(|s| s.as_bytes().last().map(|&b| b == b'/' || b == b'\\')).unwrap_or(Some(false)).unwrap_or(false) {
+                if let Ok(_) = std::fs::create_dir_all(&out_dir) {
+                    out_dir.join("bios.img")
+                } else {
+                    out_dir
+                }
+            } else {
+                out_dir
+            };
 
             if let Err(e) = BiosBoot::new(&input_file).create_disk_image(&bios_path) {
                 error!("Fatal error encountered while building disk image: {e}");

@@ -210,8 +210,7 @@ dependencies = [
 [[package]]
 name = "bootloader"
 version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e092090f6e2b68cee8dc291ec60e4706f6b0c5cd90b666a5248a20f30591ccb0"
+source = "git+https://github.com/mysteriouslyseeing/bootloader.git#12e3331c93050f9a2079c6af27c451a4c7b10e10"
 dependencies = [
  "anyhow",
  "async-process",
@@ -229,15 +228,14 @@ dependencies = [
 [[package]]
 name = "bootloader-boot-config"
 version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a36c0df7b26b44254828ece99ed72aa01695cc37f007a97afe8aee29feb26e3e"
+source = "git+https://github.com/mysteriouslyseeing/bootloader.git#12e3331c93050f9a2079c6af27c451a4c7b10e10"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "bootloader_linker"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bootloader",
  "clap",

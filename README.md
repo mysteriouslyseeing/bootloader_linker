@@ -6,25 +6,18 @@ A quick and easy program that links your executables created using the [bootload
 bootloader_linker -V
 ```
 ```console
-bootloader_linker 0.1.0 using bootloader version 0.11.4
+bootloader_linker 0.1.3 using bootloader version 0.11.4
 ```
 
 ## Installation
 
-Installation via cargo currently isn't working (only tested on Windows).
-
-However, building from source always does.
+Installation directly via cargo does not currently work, as there is an issue with the bootloader crate.
+However, there is a [fork](https://github.com/mysteriouslyseeing/bootloader/) of bootloader that does. As you cannot
+upload crates with Github dependencies to crates.io, you need to `cargo install using the github repo of this crate:
 
 ```sh
-> git clone https://github.com/mysteriouslyseeing/bootloader_linker.git
-> cd bootloader_linker
-> cargo build --release
+cargo install --git https://github.com/mysteriouslyseeing/bootloader_linker.git
 ```
-
-Then, take the compiled binary and place it somewhere in path.
-
-You can also `cargo install bootloader_linker`, and replace the executable in .cargo/bin with the one you built yourself.
-This has the upside of ensuring that `cargo uninstall bootloader_linker` works.
 
 ## Usage
 
@@ -47,7 +40,7 @@ Options:
   -q, --qemu-path <QEMU_PATH>  The name of the qemu executable. Ignored if not running a disk image [default: qemu-system-x86_64]
   -v, --verbosity...           Configures the amount of logging. If this flag appears more times more things will be logged
   -h, --help                   Print help (see more with '--help')
-  -V, --version                Print version
+  -V, --version                Print version            Print version
 ```
 
 Please note that in order to run the disk image you need to have [qemu](https://www.qemu.org/) installed. If the executable is not in PATH, you can specify it with --qemu-path

@@ -13,10 +13,10 @@ bootloader_linker 0.1.3 using bootloader version 0.11.4
 
 Installation directly via cargo does not currently work, as there is an issue with the bootloader crate.
 However, there is a [fork](https://github.com/mysteriouslyseeing/bootloader/) of bootloader that does. As you cannot
-upload crates with Github dependencies to crates.io, you need to `cargo install using the github repo of this crate:
-
+upload crates with Github dependencies to crates.io, you need to `cargo install` using the github repo of this crate.
+Additionally, the git dependency means you need bindeps, and that means you need nightly. Therefore, the command it:
 ```sh
-cargo install --git https://github.com/mysteriouslyseeing/bootloader_linker.git
+cargo +nightly install --git https://github.com/mysteriouslyseeing/bootloader_linker.git -Zbindeps
 ```
 
 ## Usage

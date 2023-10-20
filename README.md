@@ -6,7 +6,7 @@ A quick and easy program that links your executables created using the [bootload
 bootloader_linker -V
 ```
 ```console
-bootloader_linker 0.1.3 using bootloader version 0.11.4
+bootloader_linker 0.1.4 using bootloader version 0.11.4
 ```
 
 ## Installation
@@ -14,7 +14,7 @@ bootloader_linker 0.1.3 using bootloader version 0.11.4
 Installation directly via cargo does not currently work, as there is an issue with the bootloader crate.
 However, there is a [fork](https://github.com/mysteriouslyseeing/bootloader/) of bootloader that does. As you cannot
 upload crates with Github dependencies to crates.io, you need to `cargo install` using the github repo of this crate.
-Additionally, the git dependency means you need bindeps, and that means you need nightly. Therefore, the command it:
+Additionally, the git dependency means you need bindeps, and that means you need nightly. Therefore, the command is:
 ```sh
 cargo +nightly install --git https://github.com/mysteriouslyseeing/bootloader_linker.git -Zbindeps
 ```
@@ -91,23 +91,31 @@ There are also short-hands for the three subcommands:
 bootloader-linker is suitable for use with cargo run. Add these lines to your .cargo/config.toml:
 ```toml
 [target.'cfg(target_os = "none")']
-runner = ["bootloader_linker", "br", "-o", "./target"]
+runner = ["bootloader_linker", "br", "-o", "./target", "-u"]
 ```
 
-Now, `cargo run` will invoke bootloader_linker instead of trying to run the executable directly.
+Now, ```sh cargo run``` will invoke bootloader_linker instead of trying to run the executable directly.
 
-If you want to pass extra args to qemu, you cannot simply add to .cargo/config.toml, you have to pass them in the run call:
-
-```sh
-cargo run --release -- -- -serial stdio
-```
-
-Note the the two double dashes are required because the first one tells cargo to pass the remaining arguments to bootloader-linker and the second one tells bootloader-linker to pass the remaining arguments to qemu.
-
-Running that command every time can be kind of clunky, so you might want to add an alias in Cargo.toml:
+If you want to pass extra args to qemu, you cannot use the normal notation with --,
+as cargo will place the extra arguments before the binary. So, for example,
 ```toml
-[alias]
-rq = "run -- -- -serial stdio"
-rqr = "run --release -- -- -serial stdio"
+runner = ["bootloader_linker", "br", "--", "-serial", "stdio"]
 ```
-Now, you just have to do `cargo rq` or `cargo rqr` to build and run the disk image in qemu in release or debug mode respectively.
+would result in the command
+```sh
+bootloader_linker br -- -serial stdio [BINARY]
+```
+which does not work.
+
+If you want to pass in extra args, you will have to use the -a argument to pass them in one at a time:
+```sh
+bootloader_linker br -a"-serial" -a"stdio" [BINARY]
+```
+So therefore, your runner field should look like this:
+```toml
+runner = ["bootloader_linker", "br", "-o", "./target", "-u", "-a'-serial'", "-a'stdio'"]
+```
+You can probably remove the quotes too if your extra argument does not contain spaces:
+```toml
+runner = ["bootloader_linker", "br", "-o", "./target", "-u", "-a-serial", "-astdio"]
+```

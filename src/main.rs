@@ -2,19 +2,24 @@ use std::path::PathBuf;
 
 use bootloader_linker::{init_logger, Config, SubCommand};
 use clap::Parser;
-use log::{error, info, trace};
+use log::{error, info, trace, warn};
 
-use bootloader::{BiosBoot, BootConfig, UefiBoot};
+use bootloader::{BootConfig, DiskImageBuilder};
 
 fn get_output_path(out_dir: PathBuf, default_file_name: &str) -> PathBuf {
     if out_dir.is_dir() {
         out_dir.join(default_file_name)
     } else if out_dir
         .to_str()
-        .map(|s| s.as_bytes().last().map(|&b| b == b'/' || b == b'\\').unwrap_or(false))
+        .map(|s| {
+            s.as_bytes()
+                .last()
+                .map(|&b| b == b'/' || b == b'\\')
+                .unwrap_or(false)
+        })
         .unwrap_or(false)
     {
-        if let Ok(_) = std::fs::create_dir_all(&out_dir) {
+        if std::fs::create_dir_all(&out_dir).is_ok() {
             out_dir.join(default_file_name)
         } else {
             out_dir
@@ -41,6 +46,7 @@ fn main() {
         uefi,
         out_dir,
         qemu_path,
+        files_to_mount,
         minimum_framebuffer_height,
         minimum_framebuffer_width,
         log_level,
@@ -77,29 +83,38 @@ fn main() {
         boot_config.frame_buffer_logging = frame_buffer_logging;
         boot_config.serial_logging = serial_logging;
 
-        if uefi {
-            let uefi_path = get_output_path(out_dir, "uefi.img");
+        let output_path = get_output_path(out_dir, if uefi { "uefi.img" } else { "bios.img" });
 
-            if let Err(e) = UefiBoot::new(&input_file)
-                .set_boot_config(&boot_config)
-                .create_disk_image(&uefi_path)
-            {
-                report_error_and_exit(e)
-            }
+        let mut builder = DiskImageBuilder::new(input_file);
+        builder.set_boot_config(&boot_config);
+        files_to_mount.into_iter().for_each(|path| {
+            let name = match path.file_name() {
+                Some(s) => {
+                    if let Some(s) = s.to_str() {
+                        s.to_owned()
+                    } else {
+                        warn!("File name {} not valid utf-8", s.to_string_lossy());
+                        return;
+                    }
+                }
+                None => {
+                    warn!("File {} could not be resolved.", path.display());
+                    return;
+                }
+            };
+            builder.set_file(name, path);
+        });
 
-            input_file = uefi_path;
+        let result = if uefi {
+            builder.create_uefi_image(&output_path)
         } else {
-            let bios_path = get_output_path(out_dir, "bios.img");
+            builder.create_bios_image(&output_path)
+        };
 
-            if let Err(e) = BiosBoot::new(&input_file)
-                .set_boot_config(&boot_config)
-                .create_disk_image(&bios_path)
-            {
-                report_error_and_exit(e)
-            }
-
-            input_file = bios_path;
+        if let Err(e) = result {
+            report_error_and_exit(e);
         }
+        input_file = output_path;
     }
     if run {
         trace!("Running disk image");

@@ -18,6 +18,9 @@ pub struct Config {
     /// The name of the qemu executable. Ignored if not running a disk image.
     #[arg(short, long, default_value = "qemu-system-x86_64")]
     pub qemu_path: String,
+    /// Extra files to mount to the FAT filesystem.
+    #[arg(short = 'm', long = "mount-file")]
+    pub files_to_mount: Vec<PathBuf>,
 
     /// Specifies the minimum frame buffer height desired.
     /// If it is not possible, the bootloader will fall back to a smaller format.

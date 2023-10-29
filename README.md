@@ -6,7 +6,7 @@ A quick and easy program that links your executables created using the [bootload
 bootloader_linker -V
 ```
 ```console
-bootloader_linker 0.1.4 using bootloader version 0.11.4
+bootloader_linker 0.1.5 using bootloader version 0.11.4
 ```
 
 ## Installation
@@ -25,35 +25,49 @@ cargo +nightly install --git https://github.com/mysteriouslyseeing/bootloader_li
 bootloader_linker -h
 ```
 ```console
-A quick and easy program that links your executables created using bootloader_api with the actual bootloader.
-
-Usage: bootloader_linker.exe [OPTIONS] <COMMAND> <FILE> [EXTRA_ARGS]...
+Usage: bootloader_linker.exe [OPTIONS] <COMMAND> <INPUT_FILE> [EXTRA_ARGS]...
 
 Arguments:
   <COMMAND>        [possible values: build, run, build-run]
-  <FILE>           The binary/.img file to operate on. Can be created relatively easy using the bootloader_api crate
+  <INPUT_FILE>     The binary/.img file to operate on. Can be created relatively easy using the bootloader_api crate
   [EXTRA_ARGS]...  Extra args to pass to qemu
 
 Options:
-  -u, --uefi                   Sets the loader to use uefi instead of bios
-  -o, --out-dir <OUT_DIR>      The directory to put output files in. Ignored if not building a disk image [default: ./]
-  -q, --qemu-path <QEMU_PATH>  The name of the qemu executable. Ignored if not running a disk image [default: qemu-system-x86_64]
-  -v, --verbosity...           Configures the amount of logging. If this flag appears more times more things will be logged
-  -h, --help                   Print help (see more with '--help')
-  -V, --version                Print version            Print version
+  -u, --uefi
+          Sets the loader to use uefi instead of bios
+  -o, --out-dir <OUT_DIR>
+          The directory to put output files in. Ignored if not building a disk image [default: ./]
+  -q, --qemu-path <QEMU_PATH>
+          The name of the qemu executable. Ignored if not running a disk image [default: qemu-system-x86_64]
+  -m, --mount-file <FILES_TO_MOUNT>
+          Extra files to mount to the FAT filesystem
+  -H, --min_height <MINIMUM_FRAMEBUFFER_HEIGHT>
+          Specifies the minimum frame buffer height desired. If it is not possible, the bootloader will fall back to a smaller format
+  -W, --min_width <MINIMUM_FRAMEBUFFER_WIDTH>
+          Specifies the minimum frame buffer width desired. If it is not possible, the bootloader will fall back to a smaller format
+  -l, --log-level <LOG_LEVEL>
+          The minimum level of logging to still display [default: warn] [possible values: off, trace, debug, info, warn, error]
+  -f, --frame_logging
+          Whether the bootloader should print log messages to the framebuffer during boot
+  -s, --serial_logging
+          Whether the bootloader should print log messages to the serial port during boot
+  -a, --args <ARGS>
+          Extra args to pass to qemu. You can also put them after -- at the end of the command
+  -h, --help
+          Print help (see more with '--help')
+  -V, --version
+          Print version
 ```
 
-Please note that in order to run the disk image you need to have [qemu](https://www.qemu.org/) installed. If the executable is not in PATH, you can specify it with --qemu-path
+Please note that in order to run the disk image you need to have [qemu](https://www.qemu.org/) installed. If the executable is not in PATH, you can specify it with --qemu-path 
 
 ## Examples
 
 ```sh
-> bootloader_linker build-run test_binary -o ./target -- -serial stdio
+bootloader_linker build-run test_binary -o ./target -- -serial stdio
 ```
 ```console
-[bootloader-linker] INFO - Building disk image
-[bootloader-linker] INFO - Running disk image
-/// Bootloader booting info...
+// Bootloader booting info...
 Hello world!
 ```
 
@@ -88,13 +102,15 @@ There are also short-hands for the three subcommands:
 
 ## Advanced use
 
+### Use with cargo run
+
 bootloader-linker is suitable for use with cargo run. Add these lines to your .cargo/config.toml:
 ```toml
 [target.'cfg(target_os = "none")']
 runner = ["bootloader_linker", "br", "-o", "./target", "-u"]
 ```
 
-Now, ```sh cargo run``` will invoke bootloader_linker instead of trying to run the executable directly.
+Now, `cargo run` will invoke bootloader_linker instead of trying to run the executable directly.
 
 If you want to pass extra args to qemu, you cannot use the normal notation with --,
 as cargo will place the extra arguments before the binary. So, for example,
@@ -119,3 +135,21 @@ You can probably remove the quotes too if your extra argument does not contain s
 ```toml
 runner = ["bootloader_linker", "br", "-o", "./target", "-u", "-a-serial", "-astdio"]
 ```
+
+### Mounting extra files
+
+If you need other files mounted to the .img filesystem, specify them with --mount-file (or -m):
+
+```sh
+bootloader_linker br [BINARY] --mount-file [FILE] -u -o ./target
+```
+
+If you need multiple files mounted, specify the argument multiple times:
+
+```sh
+bootloader_linker br [BINARY] --mount-file [FILE_A] --mount-file [FILE_B] -u -o ./target
+```
+
+## Reporting bugs
+
+This command-line utility has not been tested extensively. If you have any issues, report them in an issue on the github [repo](https://github.com/mysteriouslyseeing/bootloader_linker/issues).

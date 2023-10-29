@@ -1,6 +1,6 @@
 [package]
 name = "bootloader_linker"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 description = "A quick and easy program that links your executables created using bootloader_api with the actual bootloader."
 license = "MIT OR Apache-2.0"
@@ -9,10 +9,10 @@ categories = ["command-line-utilities", "development-tools", "development-tools:
 repository = "https://github.com/mysteriouslyseeing/bootloader_linker"
 
 [dependencies]
-bootloader = { version = "0.11.4", git = "https://github.com/mysteriouslyseeing/bootloader.git", features = ["embedded_binaries"] }
+bootloader = { version = "0.11.4", git = "https://github.com/mysteriouslyseeing/bootloader.git" }
+bootloader-boot-config = { version = "0.11.4", git = "https://github.com/mysteriouslyseeing/bootloader.git" }
 clap = { version = "4.4.6", features = ["derive"] }
 ovmf-prebuilt = "0.1.0-alpha.1"
 env_logger = "0.10.0"
 log = "0.4.20"
-anyhow = "1"
-bootloader-boot-config = { version = "0.11.4", git = "https://github.com/mysteriouslyseeing/bootloader.git" }
+anyhow = "1.0"

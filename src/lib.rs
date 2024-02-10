@@ -3,11 +3,11 @@ use clap::{Parser, ValueEnum};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug, Clone)]
-#[command(author, version = concat!(std::env!("CARGO_PKG_VERSION"), " using bootloader 0.11.4"), about, long_about = None)]
+#[command(author, version = concat!(std::env!("CARGO_PKG_VERSION"), " using bootloader 0.11.6"), about, long_about = None)]
 pub struct Config {
     #[arg(value_enum)]
     pub command: SubCommand,
-    #[doc = "The binary/.img file to operate on. Can be created relatively easy using the bootloader_api crate."]
+    #[doc = "The binary/.img file to operate on."]
     pub input_file: PathBuf,
     /// Sets the loader to use uefi instead of bios.
     #[arg(short, long)]

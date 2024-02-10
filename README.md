@@ -1,22 +1,21 @@
 # bootloader-linker
 
-A quick and easy program that links your executables created using the [bootloader_api](https://crates.io/crates/bootloader_api) crate with the actual [bootloader](https://crates.io/crates/bootloader) crate into a disk image. Also capable of running disk images using qemu.
+A simple program that links your executables created using the [bootloader_api](https://crates.io/crates/bootloader_api) crate with the actual [bootloader](https://crates.io/crates/bootloader) crate into a disk image. Also capable of running disk images using qemu.
 
 ```sh
 bootloader_linker -V
 ```
-```console
-bootloader_linker 0.1.5 using bootloader version 0.11.4
+```
+bootloader_linker 0.1.6 using bootloader 0.11.6
 ```
 
 ## Installation
 
-Installation directly via cargo does not currently work, as there is an issue with the bootloader crate.
-However, there is a [fork](https://github.com/mysteriouslyseeing/bootloader/) of bootloader that does. As you cannot
-upload crates with Github dependencies to crates.io, you need to `cargo install` using the github repo of this crate.
-Additionally, the git dependency means you need bindeps, and that means you need nightly. Therefore, the command is:
+Installation can be done directly via cargo. You will need a nightly compiler with the `llvm-tools-preview` and `rust-src` components:
 ```sh
-cargo +nightly install --git https://github.com/mysteriouslyseeing/bootloader_linker.git -Zbindeps
+rustup component add llvm-tools-preview
+rustup component add rust-src
+cargo install bootloader_linker
 ```
 
 ## Usage
@@ -24,12 +23,14 @@ cargo +nightly install --git https://github.com/mysteriouslyseeing/bootloader_li
 ```sh
 bootloader_linker -h
 ```
-```console
-Usage: bootloader_linker.exe [OPTIONS] <COMMAND> <INPUT_FILE> [EXTRA_ARGS]...
+```
+A simple program that links your executables created using bootloader_api with the actual bootloader.
+
+Usage: bootloader_linker [OPTIONS] <COMMAND> <INPUT_FILE> [EXTRA_ARGS]...
 
 Arguments:
   <COMMAND>        [possible values: build, run, build-run]
-  <INPUT_FILE>     The binary/.img file to operate on. Can be created relatively easy using the bootloader_api crate
+  <INPUT_FILE>     The binary/.img file to operate on
   [EXTRA_ARGS]...  Extra args to pass to qemu
 
 Options:
@@ -46,7 +47,7 @@ Options:
   -W, --min_width <MINIMUM_FRAMEBUFFER_WIDTH>
           Specifies the minimum frame buffer width desired. If it is not possible, the bootloader will fall back to a smaller format
   -l, --log-level <LOG_LEVEL>
-          The minimum level of logging to still display [default: warn] [possible values: off, trace, debug, info, warn, error]
+          The minimum level of logging to still display [default: trace] [possible values: off, trace, debug, info, warn, error]
   -f, --frame_logging
           Whether the bootloader should print log messages to the framebuffer during boot
   -s, --serial_logging
@@ -131,7 +132,7 @@ So therefore, your runner field should look like this:
 ```toml
 runner = ["bootloader_linker", "br", "-o", "./target", "-u", "-a'-serial'", "-a'stdio'"]
 ```
-You can probably remove the quotes too if your extra argument does not contain spaces:
+You can remove the quotes too if your extra argument does not contain spaces:
 ```toml
 runner = ["bootloader_linker", "br", "-o", "./target", "-u", "-a-serial", "-astdio"]
 ```
@@ -144,7 +145,7 @@ If you need other files mounted to the .img filesystem, specify them with --moun
 bootloader_linker br [BINARY] --mount-file [FILE] -u -o ./target
 ```
 
-If you need multiple files mounted, specify the argument multiple times:
+If you need multiple files mounted, include the argument multiple times:
 
 ```sh
 bootloader_linker br [BINARY] --mount-file [FILE_A] --mount-file [FILE_B] -u -o ./target

@@ -9,7 +9,7 @@ pub struct Config {
     pub command: SubCommand,
     #[doc = "The binary/.img file to operate on."]
     pub input_file: PathBuf,
-    /// Sets the loader to use uefi instead of bios.
+    /// Use uefi instead of bios when building and when running QEMU.
     #[arg(short, long)]
     pub uefi: bool,
     /// The directory to put output files in. Ignored if not building a disk image.
@@ -21,6 +21,9 @@ pub struct Config {
     /// Extra files to mount to the FAT filesystem.
     #[arg(short = 'm', long = "mount-file")]
     pub files_to_mount: Vec<PathBuf>,
+    /// Don't use the default OVMF.fd when running qemu with UEFI. You may have to specify a bios by passing -bios to qemu
+    #[arg(short, long)]
+    pub no_ovmf: bool,
 
     /// Specifies the minimum frame buffer height desired.
     /// If it is not possible, the bootloader will fall back to a smaller format.

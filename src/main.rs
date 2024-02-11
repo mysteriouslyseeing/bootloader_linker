@@ -47,6 +47,7 @@ fn main() {
         out_dir,
         qemu_path,
         files_to_mount,
+        no_ovmf,
         minimum_framebuffer_height,
         minimum_framebuffer_width,
         log_level,
@@ -119,7 +120,7 @@ fn main() {
     if run {
         trace!("Running disk image");
         let mut cmd = std::process::Command::new(qemu_path);
-        if uefi {
+        if uefi && !no_ovmf {
             cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());
         }
         cmd.arg("-drive")
